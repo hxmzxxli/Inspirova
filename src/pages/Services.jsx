@@ -8,6 +8,7 @@ import {
   Rocket
 } from 'lucide-react';
 
+// Fixed ServiceModal component with improved event handling
 const ServiceModal = ({ service, isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -17,10 +18,17 @@ const ServiceModal = ({ service, isOpen, onClose, onSubmit }) => {
   });
   const modalRef = useRef(null);
 
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({ name: '', email: '', phone: '', problem: '' });
+    }
+  }, [isOpen]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     onSubmit(formData);
-    setFormData({ name: '', email: '', phone: '', problem: '' });
   };
 
   useEffect(() => {
@@ -30,14 +38,28 @@ const ServiceModal = ({ service, isOpen, onClose, onSubmit }) => {
       }
     };
 
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
     if (isOpen) {
       document.addEventListener('mousedown', handleOutsideClick);
+      document.addEventListener('keydown', handleEscape);
+      // Prevent body scrolling when modal is open
+      document.body.style.overflow = 'hidden';
     }
 
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
+      // Restore body scrolling when modal is closed
+      document.body.style.overflow = 'auto';
     };
   }, [isOpen, onClose]);
+
+  if (!service || !isOpen) return null;
 
   const serviceDetails = {
     "Web Design & Development": {
@@ -56,7 +78,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSubmit }) => {
         "Seamless third-party integrations",
         "Regular security updates and maintenance"
       ],
-      price: "Starting from $2,999",
+      //price: "Starting from $2,999",
       timeframe: "4-8 weeks"
     },
     "Digital Marketing": {
@@ -75,7 +97,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSubmit }) => {
         "Monthly performance reviews",
         "Custom dashboard for real-time metrics"
       ],
-      price: "Starting from $1,499/month",
+     // price: "Starting from $1,499/month",
       timeframe: "Ongoing (3-month minimum)"
     },
     "SEO Optimization": {
@@ -94,7 +116,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSubmit }) => {
         "Competitor SEO analysis",
         "Monthly ranking and traffic reports"
       ],
-      price: "Starting from $999/month",
+      //price: "Starting from $999/month",
       timeframe: "Ongoing (6-month recommended)"
     },
     "Branding & Identity": {
@@ -113,7 +135,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSubmit }) => {
         "Social media branding kit",
         "Brand style guide (digital and print)"
       ],
-      price: "Starting from $1,999",
+      //price: "Starting from $1,999",
       timeframe: "3-5 weeks"
     },
     "App Development": {
@@ -132,7 +154,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSubmit }) => {
         "Cloud synchronization",
         "App Store optimization"
       ],
-      price: "Starting from $5,999",
+      //price: "Starting from $5,999",
       timeframe: "8-16 weeks"
     },
     "Social Media Marketing": {
@@ -151,136 +173,130 @@ const ServiceModal = ({ service, isOpen, onClose, onSubmit }) => {
         "Audience growth strategies",
         "Cross-platform campaign coordination"
       ],
-      price: "Starting from $799/month",
+      //price: "Starting from $799/month",
       timeframe: "Ongoing (3-month minimum)"
     }
   };
 
-  if (!service) return null;
-
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
-          onClick={onClose}
-        >
-          <motion.div
-            ref={modalRef}
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            className="bg-gray-900/90 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={e => e.stopPropagation()}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        ref={modalRef}
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="bg-gray-900/90 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-bold text-white">{service.title}</h3>
+          <motion.button 
+            whileHover={{ rotate: 90 }}
+            onClick={onClose} 
+            className="text-gray-400 hover:text-white transition-colors"
           >
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-white">{service.title}</h3>
-              <motion.button 
-                whileHover={{ rotate: 90 }}
-                onClick={onClose} 
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <X size={24} />
-              </motion.button>
-            </div>
+            <X size={24} />
+          </motion.button>
+        </div>
 
-            <div className="text-gray-300 mb-8">
-              <p className="mb-4">{serviceDetails[service.title].description}</p>
-              <p className="text-lg font-semibold text-blue-400 mb-4">{serviceDetails[service.title].price}</p>
-              <p className="text-sm text-gray-400 mb-6">Estimated timeframe: {serviceDetails[service.title].timeframe}</p>
-              
-              <h4 className="text-xl font-semibold text-white mb-3">Core Services</h4>
-              <ul className="space-y-2 mb-6">
-                {serviceDetails[service.title].points.map((point, index) => (
-                  <li key={index} className="flex items-center">
-                    <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-              
-              <h4 className="text-xl font-semibold text-white mb-3">Additional Features</h4>
-              <ul className="space-y-2 mb-6">
-                {serviceDetails[service.title].features.map((feature, index) => (
-                  <li key={index} className="flex items-center">
-                    <ArrowRight className="mr-2 text-blue-500 flex-shrink-0" size={16} />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <div className="text-gray-300 mb-8">
+          <p className="mb-4">{serviceDetails[service.title].description}</p>
+          <p className="text-lg font-semibold text-blue-400 mb-4">{serviceDetails[service.title].price}</p>
+          <p className="text-sm text-gray-400 mb-6">Estimated timeframe: {serviceDetails[service.title].timeframe}</p>
+          
+          <h4 className="text-xl font-semibold text-white mb-3">Core Services</h4>
+          <ul className="space-y-2 mb-6">
+            {serviceDetails[service.title].points.map((point, index) => (
+              <li key={index} className="flex items-center">
+                <Check className="mr-2 text-green-500 flex-shrink-0" size={16} />
+                {point}
+              </li>
+            ))}
+          </ul>
+          
+          <h4 className="text-xl font-semibold text-white mb-3">Additional Features</h4>
+          <ul className="space-y-2 mb-6">
+            {serviceDetails[service.title].features.map((feature, index) => (
+              <li key={index} className="flex items-center">
+                <ArrowRight className="mr-2 text-blue-500 flex-shrink-0" size={16} />
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={e => setFormData({...formData, name: e.target.value})}
-                  className="w-full p-3 bg-gray-800 rounded-lg border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Enter your name"
-                />
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Your Name
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              className="w-full p-3 bg-gray-800 rounded-lg border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition-colors"
+              placeholder="Enter your name"
+            />
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Your Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={e => setFormData({...formData, email: e.target.value})}
-                  className="w-full p-3 bg-gray-800 rounded-lg border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Enter your email"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Phone Number (Optional)
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={e => setFormData({...formData, phone: e.target.value})}
-                  className="w-full p-3 bg-gray-800 rounded-lg border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Enter your phone number"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Your Email
+            </label>
+            <input
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              className="w-full p-3 bg-gray-800 rounded-lg border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition-colors"
+              placeholder="Enter your email"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Phone Number (Optional)
+            </label>
+            <input
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              className="w-full p-3 bg-gray-800 rounded-lg border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition-colors"
+              placeholder="Enter your phone number"
+            />
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Describe Your Project
-                </label>
-                <textarea
-                  required
-                  value={formData.problem}
-                  onChange={e => setFormData({...formData, problem: e.target.value})}
-                  className="w-full p-3 bg-gray-800 rounded-lg border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition-colors h-32"
-                  placeholder="Tell us about your project or challenges"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Describe Your Project
+            </label>
+            <textarea
+              required
+              value={formData.problem}
+              onChange={(e) => setFormData({...formData, problem: e.target.value})}
+              className="w-full p-3 bg-gray-800 rounded-lg border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition-colors h-32"
+              placeholder="Tell us about your project or challenges"
+            />
+          </div>
 
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
-              >
-                Submit Request
-              </motion.button>
-            </form>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          <motion.button
+            type="submit"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+          >
+            Submit Request
+          </motion.button>
+        </form>
+      </motion.div>
+    </motion.div>
   );
 };
 
@@ -299,8 +315,14 @@ const SuccessMessage = ({ onClose }) => (
   </motion.div>
 );
 
-const ServiceCard = ({ icon: Icon, title, description, color, hoverColor, index, onClick, isSelected }) => {
+// Improved ServiceCard with fixed event handling
+const ServiceCard = ({ icon: Icon, title, description, color, index, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
+  
+  const handleClick = (e) => {
+    e.preventDefault();
+    onClick();
+  };
   
   return (
     <motion.div
@@ -318,11 +340,7 @@ const ServiceCard = ({ icon: Icon, title, description, color, hoverColor, index,
         animate={{ scale: isHovered ? 1.1 : 0.8 }}
         transition={{ duration: 0.4 }}
         style={{
-          background: isHovered 
-            ? `linear-gradient(to right, var(--tw-gradient-stops))`
-            : `linear-gradient(to right, var(--tw-gradient-stops))`,
-          '--tw-gradient-from': `rgb(var(--${color.split(' ')[0]}-rgb))`,
-          '--tw-gradient-to': `rgb(var(--${color.split(' ')[2]}-rgb))`,
+          background: `linear-gradient(to right, ${color.split(' ')[0]}, ${color.split(' ')[2]})`,
         }}
       />
       <div className="relative p-6 rounded-xl bg-gray-800/50 backdrop-blur-sm border border-gray-700 hover:border-gray-600 transition-all duration-300 h-full flex flex-col">
@@ -341,7 +359,7 @@ const ServiceCard = ({ icon: Icon, title, description, color, hoverColor, index,
         </p>
 
         <motion.button 
-          onClick={onClick}
+          onClick={handleClick}
           className="text-blue-400 hover:text-blue-300 flex items-center gap-2 w-full justify-between mt-auto"
           whileHover={{ x: 5 }}
           transition={{ duration: 0.2 }}
@@ -355,46 +373,57 @@ const ServiceCard = ({ icon: Icon, title, description, color, hoverColor, index,
               <ArrowRight className="w-4 h-4" />
             </motion.div>
           </span>
-          <motion.div
-            animate={{ rotate: isSelected ? 180 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <ChevronDown className="w-4 h-4" />
-          </motion.div>
+          <ChevronDown className="w-4 h-4" />
         </motion.button>
       </div>
     </motion.div>
   );
 };
 
+// Fixed FloatingShapes with optimized animations
 const FloatingShapes = () => {
+  // Pre-compute random values to prevent recalculation on each render
+  const shapes = Array(6).fill().map((_, i) => ({
+    id: i,
+    startX: `${Math.random() * 100}%`,
+    startY: `${Math.random() * 100}%`,
+    endX: `${Math.random() * 100}%`,
+    endY: `${Math.random() * 100}%`,
+    scale: Math.random() * 0.5 + 0.5,
+    endScale: Math.random() * 0.5 + 0.5,
+    duration: Math.random() * 10 + 10,
+    width: `${Math.random() * 100 + 50}px`,
+    height: `${Math.random() * 100 + 50}px`,
+    color: `rgba(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(
+      Math.random() * 100 + 155
+    )}, ${Math.floor(Math.random() * 255)}, 0.1)`,
+  }));
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(6)].map((_, i) => (
+      {shapes.map((shape) => (
         <motion.div
-          key={i}
+          key={shape.id}
           className="absolute rounded-full opacity-10"
           initial={{
-            x: `${Math.random() * 100}%`,
-            y: `${Math.random() * 100}%`,
-            scale: Math.random() * 0.5 + 0.5,
+            x: shape.startX,
+            y: shape.startY,
+            scale: shape.scale,
           }}
           animate={{
-            x: `${Math.random() * 100}%`,
-            y: `${Math.random() * 100}%`,
-            scale: Math.random() * 0.5 + 0.5,
+            x: shape.endX,
+            y: shape.endY,
+            scale: shape.endScale,
           }}
           transition={{
-            duration: Math.random() * 10 + 10,
+            duration: shape.duration,
             repeat: Infinity,
             repeatType: "reverse",
           }}
           style={{
-            width: `${Math.random() * 100 + 50}px`,
-            height: `${Math.random() * 100 + 50}px`,
-            background: `rgba(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(
-              Math.random() * 100 + 155
-            )}, ${Math.floor(Math.random() * 255)}, 0.1)`,
+            width: shape.width,
+            height: shape.height,
+            background: shape.color,
             filter: 'blur(20px)',
           }}
         />
@@ -437,76 +466,7 @@ const ProcessStep = ({ number, title, description, icon: Icon, index }) => {
   );
 };
 
-const TestimonialSlider = () => {
-  const testimonials = [
-    {
-      quote: "Working with this team transformed our online presence. Their strategic approach to digital marketing increased our conversion rates by 57% in just three months.",
-      author: "Sarah Johnson",
-      position: "CEO, TechStart Inc.",
-      image: "/api/placeholder/100/100"
-    },
-    {
-      quote: "The web development project exceeded our expectations. The final product was not only beautiful but also resulted in a 200% increase in user engagement.",
-      author: "Michael Chen",
-      position: "Marketing Director, Global Retail",
-      image: "/api/placeholder/100/100"
-    },
-    {
-      quote: "Their SEO expertise helped us climb from page 3 to the top position for our key industry terms. The ROI has been exceptional.",
-      author: "Emma Rodriguez",
-      position: "Founder, Rodriguez & Partners",
-      image: "/api/placeholder/100/100"
-    }
-  ];
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [testimonials.length]);
-
-  return (
-    <div className="relative overflow-hidden py-12">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -50 }}
-          transition={{ duration: 0.5 }}
-          className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700"
-        >
-          <div className="flex flex-col items-center text-center">
-            <div className="relative mb-6">
-              <div className="w-20 h-20 rounded-full overflow-hidden">
-                <img src={testimonials[currentIndex].image} alt={testimonials[currentIndex].author} className="w-full h-full object-cover" />
-              </div>
-              <div className="absolute -right-2 -bottom-2 w-6 h-6 bg-blue-500 rounded-full" />
-            </div>
-            <p className="text-lg text-gray-300 italic mb-4">"{testimonials[currentIndex].quote}"</p>
-            <h4 className="text-white font-semibold">{testimonials[currentIndex].author}</h4>
-            <p className="text-gray-400 text-sm">{testimonials[currentIndex].position}</p>
-          </div>
-        </motion.div>
-      </AnimatePresence>
-      
-      <div className="flex justify-center mt-6 space-x-2">
-        {testimonials.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              currentIndex === index ? 'bg-blue-500 w-6' : 'bg-gray-600'
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
+// Removed TestimonialSlider as requested
 
 const WhyChooseUsItem = ({ icon: Icon, title, description, index }) => {
   return (
@@ -569,16 +529,29 @@ const FAQ = ({ question, answer, index }) => {
   );
 };
 
+// Main Services component with optimized scroll handling
 const Services = () => {
   const [selectedService, setSelectedService] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const { scrollYProgress } = useScroll();
   const [scrolled, setScrolled] = useState(0);
 
+  // Use lazy initialization to prevent unnecessary re-renders
+  const scrollRef = useRef({
+    lastScrollY: 0,
+    ticking: false
+  });
+
+  // Optimize scroll handler
   useEffect(() => {
     const unsubscribe = scrollYProgress.onChange(v => {
-      setScrolled(v);
+      if (!scrollRef.current.ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(v);
+          scrollRef.current.ticking = false;
+        });
+        scrollRef.current.ticking = true;
+      }
     });
     return () => unsubscribe();
   }, [scrollYProgress]);
@@ -596,52 +569,59 @@ const Services = () => {
       icon: MonitorSmartphone,
       title: "Web Design & Development",
       description: "Custom websites that captivate your audience and drive conversions. Our responsive designs ensure perfect viewing across all devices.",
-      color: "violet-600 to indigo-600",
-      hoverColor: "violet-500 to indigo-500"
+      color: "rgb(124, 58, 237) rgb(79, 70, 229)", // violet-600 to indigo-600
     },
     {
       icon: BarChart3,
       title: "Digital Marketing",
       description: "Data-driven strategies to grow your online presence and ROI. We combine analytics with creativity to deliver measurable results.",
-      color: "indigo-600 to blue-600",
-      hoverColor: "indigo-500 to blue-500"
+      color: "rgb(79, 70, 229) rgb(37, 99, 235)", // indigo-600 to blue-600
     },
     {
       icon: Search,
       title: "SEO Optimization",
       description: "Boost your rankings and attract organic traffic to your website. Our proven SEO techniques help you climb search engine results pages.",
-      color: "blue-600 to cyan-600",
-      hoverColor: "blue-500 to cyan-500"
+      color: "rgb(37, 99, 235) rgb(8, 145, 178)", // blue-600 to cyan-600
     },
     {
       icon: PenTool,
       title: "Branding & Identity",
       description: "Create a memorable brand that resonates with your target audience. From logo design to complete brand guidelines, we build your unique identity.",
-      color: "cyan-600 to teal-600",
-      hoverColor: "cyan-500 to teal-500"
+      color: "rgb(8, 145, 178) rgb(13, 148, 136)", // cyan-600 to teal-600
     },
     {
       icon: Code,
       title: "App Development",
       description: "Native and cross-platform apps that deliver exceptional user experience. We build scalable, feature-rich applications for iOS and Android.",
-      color: "teal-600 to emerald-600",
-      hoverColor: "teal-500 to emerald-500"
+      color: "rgb(13, 148, 136) rgb(5, 150, 105)", // teal-600 to emerald-600
     },
     {
       icon: Megaphone,
       title: "Social Media Marketing",
       description: "Engage your audience and build a strong social media presence. Our strategies increase brand awareness and foster community growth.",
-      color: "emerald-600 to green-600",
-      hoverColor: "emerald-500 to green-500"
+      color: "rgb(5, 150, 105) rgb(22, 163, 74)", // emerald-600 to green-600
     }
   ];
 
   const { scrollY } = useScroll();
   const backgroundY = useTransform(scrollY, [0, 1000], [0, 300]);
 
+  // Added custom testimonials array as replacement for TestimonialSlider
+  const testimonials = [
+    {
+      quote: "Our team is dedicated to delivering exceptional results that exceed client expectations. We approach every project with creativity, technical expertise, and strategic thinking.",
+      author: "Our Promise",
+    },
+    {
+      quote: "We believe in building long-term partnerships with our clients, not just delivering one-off projects. Your success is our success.",
+      author: "Our Philosophy",
+    }
+  ];
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-gray-900 relative overflow-hidden">
+        {/* Background gradient effect with optimized animations */}
         <motion.div 
           className="absolute inset-0 w-full h-full z-0"
           style={{ y: backgroundY }}
@@ -668,11 +648,13 @@ const Services = () => {
           <FloatingShapes />
         </motion.div>
         
+        {/* Services Section */}
         <section className="py-20 px-4 relative z-10">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8 }}
               className="text-center mb-16"
             >
@@ -695,24 +677,21 @@ const Services = () => {
                   key={index}
                   {...service}
                   index={index}
-                  isSelected={selectedIndex === index}
-                  onClick={() => {
-                    setSelectedService(service);
-                    setSelectedIndex(index);
-                  }}
+                  onClick={() => setSelectedService(service)}
                 />
               ))}
             </div>
 
-            <ServiceModal
-              service={selectedService}
-              isOpen={!!selectedService}
-              onClose={() => {
-                setSelectedService(null);
-                setSelectedIndex(null);
-              }}
-              onSubmit={handleSubmit}
-            />
+            <AnimatePresence>
+              {selectedService && (
+                <ServiceModal
+                  service={selectedService}
+                  isOpen={!!selectedService}
+                  onClose={() => setSelectedService(null)}
+                  onSubmit={handleSubmit}
+                />
+              )}
+            </AnimatePresence>
             
             <AnimatePresence>
               {showSuccess && <SuccessMessage onClose={() => setShowSuccess(false)} />}
@@ -777,7 +756,7 @@ const Services = () => {
               <ProcessStep
                 number="6"
                 title="Support & Growth"
-                description="Ongoing maintenance, analytics, and optimization to ensure continued success and growth."
+                description="Ongoing support, analytics, and optimization to ensure your digital solution continues to evolve and deliver results."
                 icon={BarChart2}
                 index={5}
               />
@@ -788,63 +767,65 @@ const Services = () => {
         {/* Why Choose Us Section */}
         <section className="py-24 px-4 relative z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-              >
-                <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-500">
-                  Why Choose Us
-                </h2>
-                <p className="text-xl text-gray-400 mb-8">
-                  We combine technical expertise with creative innovation to deliver solutions that exceed expectations
-                </p>
-                
-                <div className="space-y-8">
-                  <WhyChooseUsItem
-                    icon={Zap}
-                    title="Proven Results"
-                    description="Our track record speaks for itself with measurable improvements in traffic, conversions, and brand awareness for our clients."
-                    index={0}
-                  />
-                  <WhyChooseUsItem
-                    icon={Globe}
-                    title="Industry Expertise"
-                    description="Our team brings specialized knowledge across multiple industries and stays current with the latest digital trends."
-                    index={1}
-                  />
-                  <WhyChooseUsItem
-                    icon={ShieldCheck}
-                    title="Reliable Support"
-                    description="We provide ongoing maintenance and support to ensure your digital assets continue to perform optimally."
-                    index={2}
-                  />
-                  <WhyChooseUsItem
-                    icon={MessageCircle}
-                    title="Clear Communication"
-                    description="Transparent processes and regular updates keep you informed and involved throughout your project."
-                    index={3}
-                  />
-                </div>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <TestimonialSlider />
-              </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-500">
+                Why Choose Us
+              </h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                We combine technical expertise with creative thinking to deliver solutions that stand out
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+              <WhyChooseUsItem
+                icon={Zap}
+                title="Fast & Efficient"
+                description="We deliver high-quality work within tight timeframes without compromising on quality or attention to detail."
+                index={0}
+              />
+              <WhyChooseUsItem
+                icon={Monitor}
+                title="Latest Technology"
+                description="Our team stays at the forefront of digital trends and technologies to provide cutting-edge solutions."
+                index={1}
+              />
+              <WhyChooseUsItem
+                icon={ShieldCheck}
+                title="Secure & Reliable"
+                description="We implement best security practices to ensure your digital assets are protected against threats."
+                index={2}
+              />
+              <WhyChooseUsItem
+                icon={Globe}
+                title="Global Experience"
+                description="With clients across industries and regions, we bring diverse insights to every project."
+                index={3}
+              />
+              <WhyChooseUsItem
+                icon={MessageCircle}
+                title="Clear Communication"
+                description="We believe in transparent, honest communication throughout the project lifecycle."
+                index={4}
+              />
+              <WhyChooseUsItem
+                icon={BarChart2}
+                title="Results-Driven"
+                description="Our strategies focus on delivering measurable results that contribute to your business objectives."
+                index={5}
+              />
             </div>
           </div>
         </section>
 
-        {/* FAQ Section */}
+        {/* Testimonials Section - Simplified */}
         <section className="py-24 px-4 relative z-10 bg-black/30">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -853,40 +834,118 @@ const Services = () => {
               className="text-center mb-16"
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
+                Our Commitment
+              </h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                What makes us different
+              </p>
+            </motion.div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {testimonials.map((testimonial, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                  className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700"
+                >
+                  <blockquote className="text-xl text-gray-300 mb-6">"{testimonial.quote}"</blockquote>
+                  <p className="text-blue-400 font-semibold text-lg">{testimonial.author}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-24 px-4 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-500">
                 Frequently Asked Questions
               </h2>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                Get answers to common questions about our services and process
+                Find answers to common questions about our services and process
               </p>
             </motion.div>
 
-            <div className="space-y-6">
+            <div className="space-y-2">
               <FAQ
-                question="What types of businesses do you work with?"
-                answer="We work with businesses of all sizes across various industries, from startups to established enterprises. Our team has experience in e-commerce, SaaS, healthcare, education, finance, and many other sectors."
+                question="What is your typical project timeline?"
+                answer="Project timelines vary based on scope and complexity. A standard website typically takes 4-8 weeks, while more complex applications can take 3-6 months. During our initial consultation, we'll provide you with a detailed timeline based on your specific requirements."
                 index={0}
               />
               <FAQ
-                question="How long does a typical project take to complete?"
-                answer="Project timelines vary based on scope and complexity. A basic website might take 4-6 weeks, while a comprehensive digital marketing campaign or custom application could take 2-4 months. We'll provide a detailed timeline during our initial consultation."
+                question="Do you offer ongoing maintenance and support?"
+                answer="Yes, we offer various maintenance and support packages to ensure your digital assets remain secure, up-to-date, and performing optimally. Our support packages include regular updates, security monitoring, performance optimization, and technical assistance."
                 index={1}
               />
               <FAQ
-                question="Do you offer ongoing maintenance and support?"
-                answer="Yes, we offer various maintenance packages to keep your digital assets running smoothly. These include regular updates, security monitoring, performance optimization, and technical support to address any issues that arise."
+                question="How do you determine pricing for projects?"
+                answer="Our pricing is based on several factors including project scope, complexity, timeline, and required features. We provide detailed proposals with transparent pricing after our initial consultation and requirements gathering phase. We work with businesses of all sizes and can tailor solutions to meet various budget constraints."
                 index={2}
               />
               <FAQ
-                question="How do you measure the success of a project?"
-                answer="We establish clear KPIs at the beginning of each project, which may include metrics like traffic growth, conversion rates, engagement metrics, or ROI. We provide regular reports and analytics to track progress and demonstrate value."
+                question="Do you work with clients internationally?"
+                answer="Absolutely! We work with clients globally and have experience managing remote projects across different time zones. Our communication processes and project management tools are designed to ensure smooth collaboration regardless of location."
                 index={3}
               />
               <FAQ
-                question="What makes your agency different from others?"
-                answer="Our approach combines strategic thinking with technical expertise and creative execution. We focus on building long-term partnerships rather than one-off projects, and our team brings specialized knowledge across multiple digital disciplines."
+                question="What technologies do you specialize in?"
+                answer="Our team is proficient in a wide range of technologies including React, Vue.js, Angular, Node.js, PHP, WordPress, Shopify, and various database systems. For mobile development, we work with React Native, Swift, and Kotlin. We select the most appropriate technology stack based on your specific project requirements."
                 index={4}
               />
+              <FAQ
+                question="How do you measure the success of digital marketing campaigns?"
+                answer="We establish clear KPIs at the beginning of each campaign aligned with your business objectives. These typically include metrics like conversion rates, ROI, traffic growth, engagement metrics, and lead quality. We provide regular reporting and insights to track progress and make data-driven optimizations."
+                index={5}
+              />
             </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-24 px-4 relative z-10 bg-gradient-to-r from-blue-900/50 to-purple-900/50 backdrop-blur-lg">
+          <div className="max-w-5xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+                Ready to Transform Your Digital Presence?
+              </h2>
+              <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
+                Let's discuss how our services can help you achieve your business goals and stand out in the digital landscape.
+              </p>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium py-4 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => {
+                  // If using React Router
+                  // navigate('/contact');
+                  
+                  // For same page navigation if contact is a section:
+                  // document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+                  
+                  // For standard navigation:
+                  window.location.href = '/contact';
+                }}
+              >
+                
+                Schedule a Free Consultation
+              </motion.button>
+            </motion.div>
           </div>
         </section>
       </div>
@@ -894,4 +953,4 @@ const Services = () => {
   );
 };
 
-export default Services
+export default Services;

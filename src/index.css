@@ -3,40 +3,49 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ensure full-page black background */
+html, body {
+  background-color: #000; /* Set full background to black */
+  color: #fff; /* Default text color white */
+  transition: background-color 0.5s ease-in-out;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
 
 /* Custom Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
 /* Base cursor styles */
 .cursor, .cursor-follower {
   position: absolute;
   z-index: 9999;
   pointer-events: none;
   border-radius: 50%;
-  transition: transform 0.2s ease, background-color 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.4s ease-in-out;
 }
 
 .cursor {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background-color: #FF7F50; /* Coral */
   transform: translate(-50%, -50%);
 }
 
 .cursor-follower {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   background-color: rgba(255, 127, 80, 0.3); /* Coral with transparency */
   transform: translate(-50%, -50%) scale(1);
-  transition: transform 0.2s ease, background-color 0.3s ease;
 }
 
 /* Hover effect */
@@ -45,13 +54,13 @@
 }
 
 .cursor-follower.hovered {
-  transform: translate(-50%, -50%) scale(1.5); /* Larger follower */
-  background-color: rgba(255, 255, 255, 0.2); /* Subtle white glow */
+  transform: translate(-50%, -50%) scale(1.7); /* Larger follower */
+  background-color: rgba(255, 255, 255, 0.25); /* Subtle white glow */
 }
 
-
+/* Smooth fade-in animation */
 .animate-fadeIn {
-  animation: fadeIn 1s ease-out forwards;
+  animation: fadeIn 1.2s ease-out forwards;
 }
 
 /* CSS for the header logo */
@@ -60,7 +69,7 @@
   top: 20px;
   left: 20px;
   z-index: 10000;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease-in-out;
 }
 
 .header-logo img {
@@ -68,19 +77,51 @@
 }
 
 .header-logo:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
+
 /* Hide the default mouse cursor */
 body {
   cursor: none; /* Completely hides the default cursor */
 }
 
-/* Add this to make sure transitions are smooth */
-html {
-  transition: background-color 0.3s ease;
+/* Fix unwanted white space or margins */
+section {
+  padding: 80px 0; /* Adjust section padding */
 }
 
-body {
-  transition: background-color 0.3s ease;
+/* Ensure the blue box remains original size */
+.blue-box {
+  max-width: 1200px;
+  margin: auto;
+  padding: 4rem 2rem;
+  background-color: #1e3a8a; /* Blue-800 */
+  border-radius: 12px;
+  transition: background-color 0.4s ease-in-out, transform 0.3s ease-in-out;
 }
 
+/* Fix unwanted height expansion */
+.blue-box h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+}
+
+.blue-box p {
+  font-size: 1.2rem;
+  color: #cbd5e1; /* Slate-300 */
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.blue-box:hover {
+  transform: translateY(-5px);
+  background-color: #1e40af; /* Darker Blue */
+}
+
+/* Responsive Fixes */
+@media (max-width: 768px) {
+  .blue-box {
+    padding: 3rem 1.5rem;
+  }
+}

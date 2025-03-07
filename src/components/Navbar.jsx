@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -54,7 +55,7 @@ const Navbar = () => {
                 Inspir
               </motion.span>
               <motion.span
-                className="text-purple-500"
+                className="text-white"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
@@ -62,7 +63,7 @@ const Navbar = () => {
                 ova
               </motion.span>
               <motion.div 
-                className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"
+                className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-white"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 0.7, delay: 0.6 }}
@@ -85,7 +86,7 @@ const Navbar = () => {
             </div>
             <button 
               onClick={handleGetStarted}
-              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full transition-all text-sm font-medium"
+              className="px-6 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 text-white rounded-full transition-all text-sm font-medium"
             >
               Get Started
             </button>
@@ -102,7 +103,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+{/* Mobile Navigation */}
         {isMenuOpen && (
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
@@ -136,7 +137,7 @@ const Navbar = () => {
                 handleGetStarted();
                 setIsMenuOpen(false);
               }}
-              className="w-full mt-2 px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full transition-all"
+              className="w-full mt-2 px-6 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 text-white rounded-full transition-all"
             >
               Get Started
             </button>

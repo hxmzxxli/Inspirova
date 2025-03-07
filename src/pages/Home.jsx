@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, Award, Users, Code, Zap, ArrowRight } from 'lucide-react';
+import { ChevronDown, Award, Users, Code, Zap, ArrowRight, Mail } from 'lucide-react';
 
 const Home = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,7 +17,6 @@ const Home = () => {
     };
     
     document.documentElement.style.scrollBehavior = 'smooth';
-    document.body.style.cursor = 'default';
     
     window.addEventListener('scroll', handleScroll);
     return () => {
@@ -98,7 +97,7 @@ const Home = () => {
         </motion.div>
 
         <motion.div 
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 cursor-pointer"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
           onClick={() => {
@@ -118,6 +117,7 @@ const Home = () => {
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
@@ -156,10 +156,10 @@ const Home = () => {
       <section className="py-24 bg-blue-600">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <StatCard number="250+" label="Projects Completed" />
+            <StatCard number="100+" label="Projects Completed" />
             <StatCard number="98%" label="Client Satisfaction" />
-            <StatCard number="15+" label="Years Experience" />
-            <StatCard number="100+" label="Active Clients" />
+            <StatCard number="7+" label="Years Experience" />
+            <StatCard number="50+" label="Active Clients" />
           </div>
         </div>
       </section>
@@ -170,6 +170,7 @@ const Home = () => {
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="max-w-3xl mx-auto"
           >
@@ -218,9 +219,14 @@ const Home = () => {
             <div>
               <h4 className="text-lg font-semibold text-white mb-4">Connect</h4>
               <div className="flex gap-4">
-                <SocialIcon href="YOUR_TWITTER_LINK" icon="twitter" />
-                <SocialIcon href="YOUR_LINKEDIN_LINK" icon="linkedin" />
-                <SocialIcon href="YOUR_INSTAGRAM_LINK" icon="instagram" />
+                
+                <a 
+                  href="mailto:info@inspirova.io"
+                  className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all"
+                >
+                  <Mail size={18} />
+                  <span className="sr-only">Email</span>
+                </a>
               </div>
             </div>
           </div>
@@ -238,6 +244,7 @@ const ServiceCard = ({ icon, title, description }) => (
   <motion.div 
     initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
     transition={{ duration: 0.8 }}
     className="bg-gray-900 p-8 rounded-2xl hover:bg-gray-800 transition-all"
   >
@@ -253,6 +260,7 @@ const StatCard = ({ number, label }) => (
   <motion.div 
     initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
     transition={{ duration: 0.8 }}
     className="text-center text-white"
   >
@@ -264,6 +272,8 @@ const StatCard = ({ number, label }) => (
 const SocialIcon = ({ href, icon }) => (
   <a 
     href={href} 
+    target="_blank"
+    rel="noopener noreferrer"
     className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all"
   >
     <span className="sr-only">{icon}</span>

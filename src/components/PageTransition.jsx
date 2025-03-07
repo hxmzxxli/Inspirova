@@ -12,14 +12,14 @@ const PageTransition = ({ children }) => {
 
     const pageElements = document.querySelectorAll('.page-transition');
     
-    // GSAP animations on page load
+    // GSAP animations on page load with smoother easing
     gsap.fromTo(pageElements, 
-      { opacity: 0 }, 
-      { opacity: 1, duration: 1.5, ease: 'power2.out', stagger: 0.3 }
+      { opacity: 0, y: 20 }, 
+      { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out', stagger: 0.2 }
     );
 
     return () => {
-      // Optional: GSAP cleanup on unmount
+      // Cleanup GSAP animations on unmount
       gsap.killTweensOf(pageElements);
     };
   }, [location]);
@@ -27,9 +27,9 @@ const PageTransition = ({ children }) => {
   if (!mounted) return null;
 
   const pageTransition = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { duration: 1.2, ease: 'easeInOut' } },
-    exit: { opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } },
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 1.5, ease: 'easeOut' } },
+    exit: { opacity: 0, y: -10, transition: { duration: 0.6, ease: 'easeInOut' } },
   };
 
   return (
